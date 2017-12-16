@@ -1,4 +1,7 @@
 # libmysql
+![image](https://img.shields.io/badge/author-fanrong33-blue.svg)
+![image](https://img.shields.io/badge/version-0.1-brightgreen.svg)
+
 A Friendly pymysql CURD Class
 
 Based on Mysql.class.php   
