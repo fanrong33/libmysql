@@ -14,7 +14,8 @@ import libmysql
 ```
 
 
-### 单例模式获取数据库连接
+### 获取数据库连接
+使用单例模式
 ```python
 config = {'host':'127.0.0.1', 'user':'root', 'password':'', 'db':'test', 'port':3306, 'charset':'utf8'} 
 mysql = libmysql.get_mysql(config)
