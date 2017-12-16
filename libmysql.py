@@ -4,7 +4,7 @@
 A Friendly pymysql CURD Class
 
 @author 蔡繁荣
-@version 0.1 build 20171216
+@version 1.0.0 build 20171216
 SQL Injection Warning: pymysql.escape_string(value)
 """
 
@@ -49,6 +49,52 @@ class MySQL:
         self.last_query = ''
 
 
+    def select(self, table, fields=None, where=None, order=None, limit=None, fetchone=False):
+        """
+        mysql select() function
+        Use sql.PreparedStatement method
+        """
+        with self.connection.cursor() as cursor:
+
+            prepared = []
+
+            if not fields:
+                fields = '*'
+            elif isinstance(fields, tuple) or isinstance(fields, list):
+                fields = '`{0}`'.format('`, `'.join(fields))
+            else:
+                fields = fields
+
+            if not where:
+                condition = '1'
+            elif isinstance(where, dict):
+                condition = self._join_field_value(where, ' AND ')
+                prepared.extend(where.values())
+            else:
+                condition = where
+
+            if not order:
+                orderby = ''
+            else:
+                orderby = 'ORDER BY {order}'.format(order=order)
+
+            limits = "LIMIT {limit}".format(limit=limit) if limit else ""
+
+            sql = "SELECT {fields} FROM {table} WHERE {where} {orderby} {limits}".format(
+                fields=fields, table=table, where=condition, orderby=orderby, limits=limits)
+
+            if not prepared:
+                cursor.execute(sql)
+            else:
+                cursor.execute(sql, tuple(prepared))
+            
+            self.connection.commit()
+            return cursor.fetchone() if fetchone else cursor.fetchall()
+
+
+    def find(self, table, fields=None, where=None, order=None, limit=None, fetchone=True):
+        return self.select(table, fields, where, order, limit, fetchone)
+
 
     def insert(self, table, data):
         with self.connection.cursor() as cursor:
@@ -79,10 +125,155 @@ class MySQL:
 
             return None
 
-    def close(self):
+
+    def batch_insert(self, table, data):
+        assert isinstance(data, list) and data != [], "data format is error"
+
+        with self.connection.cursor() as cursor:
+
+            params = []
+            for param in data:
+                params.append(pymysql.escape_sequence(param.values(), 'utf-8'))
+
+            values = ', '.join(params)
+            fields = ', '.join('`{}`'.format(x) for x in param.keys())
+
+            sql = u"INSERT IGNORE INTO {table} ({fields}) VALUES {values}".format(
+                fields=fields, table=table, values=values)
+
+            print(sql)
+            cursor.execute(sql)
+            last_id = self.connection.insert_id()
+
+            self.connection.commit()
+            return last_id
+
+
+    def update(self, table, where=None, data=None):
+        """
+        mysql update() function
+        Use sql.PreparedStatement method
+        """
+        with self.connection.cursor() as cursor:
+
+            prepared = []
+            params = self._join_field_value(data)
+            prepared.extend(data.values())
+
+            if not where:
+                condition = '1'
+            elif isinstance(where, dict):
+                condition = self._join_field_value(where, ' AND ')
+                prepared.extend(where.values())
+            else:
+                condition = where
+
+            sql = "UPDATE IGNORE {table} SET {params} WHERE {where}".format(
+                table=table, params=params, where=condition)
+
+            # check PreparedStatement
+            if not prepared:
+                result = cursor.execute(sql)
+            else:
+                result = cursor.execute(sql, tuple(prepared))
+
+            self.connection.commit()
+            return result
+
+
+    def delete(self, table, where=None, limit=None):
+        """
+        mysql delete() function
+        sql.PreparedStatement method
+        """
+        with self.connection.cursor() as cursor:
+
+            prepared = []
+
+            if not where:
+                condition = '1'
+            elif isinstance(where, dict):
+                condition = self._join_field_value(where, ' AND ')
+                prepared.extend(where.values())
+            else:
+                condition = where
+
+            limits = "LIMIT {limit}".format(limit=limit) if limit else ""
+
+            sql = "DELETE FROM {table} WHERE {where} {limits}".format(
+                table=table, where=condition, limits=limits)
+
+            if not prepared:
+                result = cursor.execute(sql)
+            else:
+                result = cursor.execute(sql, tuple(prepared))
+
+            self.connection.commit()
+            return result
+
+
+    def count(self, table, where=None):
+        """
+        count database record
+        Use sql.PreparedStatement method
+        """
+        with self.connection.cursor() as cursor:
+
+            prepared = []
+
+            if not where:
+                condition = '1'
+            elif isinstance(where, dict):
+                condition = self._join_field_value(where, ' AND ')
+                prepared.extend(where.values())
+            else:
+                condition = where
+
+            sql = "SELECT COUNT(*) as cnt FROM {table} WHERE {where}".format(
+                table=table, where=condition)
+
+            if not prepared:
+                cursor.execute(sql)
+            else:
+                cursor.execute(sql, tuple(prepared))
+
+            self.connection.commit()
+            return cursor.fetchone().get('cnt')
+
+
+    def query(self, sql, fetchone=False):
+        """execute custom sql query"""
+        with self.connection.cursor() as cursor:
+
+            cursor.execute(sql)
+            self.connection.commit()
+
+            return cursor.fetchone() if fetchone else cursor.fetchall()
+
+
+    def execute(self, sql):
+        """execute custom sql query"""
+        with self.connection.cursor() as cursor:
+
+            cursor.execute(sql)
+            self.connection.commit()
+
+            return
+
+
+    def _join_field_value(self, data, glue=', '):
+        sql = comma = ''
+        for key in data.keys():
+            sql += "{}`{}` = %s".format(comma, key)
+            comma = glue
+        return sql
+
+
+    def _close(self):
         if getattr(self, 'connection', 0):
             return self.connection.close()
 
+
     def __del__(self):
-        self.close()
+        self._close()
 
