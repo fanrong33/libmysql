@@ -1,10 +1,11 @@
 # libmysql
 A Friendly pymysql CURD Class
+
 Based on Mysql.class.php   
    
 ## 快速开始
 
-### 插入数据
+### 1、插入数据
 ```python
 import libmysql
 
