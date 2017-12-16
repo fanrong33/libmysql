@@ -12,14 +12,7 @@ Based on Mysql.class.php
 ```python
 import libmysql
 
-config = {
-    'host'    : '127.0.0.1',
-    'user'    : 'root',
-    'password': '',
-    'db'      : 'test',
-    'port'    : 3306,
-    'charset' : 'utf8'
-}
+config = {'host':'127.0.0.1', 'user':'root', 'password':'', 'db':'test', 'port':3306, 'charset':'utf8'} 
 mysql = libmysql.get_mysql(config)
 
 data = {'name':'lilei', 'age':25}
