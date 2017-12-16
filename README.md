@@ -17,7 +17,5 @@ mysql = libmysql.get_mysql(config)
 
 data = {'name':'lilei', 'age':25}
 insert_id = mysql.insert('t_user', data)
-if insert_id:
-    print(insert_id)
 ```
 
