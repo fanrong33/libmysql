@@ -2,9 +2,8 @@
 
 """
 A Friendly pymysql CURD Class
-
 @author 蔡繁荣
-@version 1.0.0 build 20171216
+@version 1.0.1 build 20171217
 SQL Injection Warning: pymysql.escape_string(value)
 """
 
@@ -70,6 +69,8 @@ class MySQL:
             elif isinstance(where, dict):
                 condition = self._join_field_value(where, ' AND ')
                 prepared.extend(where.values())
+            elif isinstance(where, int):
+                condition = 'id={}'.format(where)
             else:
                 condition = where
 
@@ -87,7 +88,6 @@ class MySQL:
                 cursor.execute(sql)
             else:
                 cursor.execute(sql, tuple(prepared))
-            
             self.connection.commit()
             return cursor.fetchone() if fetchone else cursor.fetchall()
 
@@ -165,6 +165,8 @@ class MySQL:
             elif isinstance(where, dict):
                 condition = self._join_field_value(where, ' AND ')
                 prepared.extend(where.values())
+            elif isinstance(where, int):
+                condition = 'id={}'.format(where)
             else:
                 condition = where
 
@@ -195,6 +197,8 @@ class MySQL:
             elif isinstance(where, dict):
                 condition = self._join_field_value(where, ' AND ')
                 prepared.extend(where.values())
+            elif isinstance(where, int):
+                condition = 'id={}'.format(where)
             else:
                 condition = where
 
