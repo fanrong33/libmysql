@@ -3,7 +3,7 @@
 """
 A Friendly pymysql CURD Class
 @author 蔡繁荣
-@version 1.0.1 build 20171217
+@version 1.0.2 build 20171223
 SQL Injection Warning: pymysql.escape_string(value)
 """
 
@@ -126,7 +126,7 @@ class MySQL:
             return None
 
 
-    def batch_insert(self, table, data):
+    def bulk_insert(self, table, data):
         assert isinstance(data, list) and data != [], "data format is error"
 
         with self.connection.cursor() as cursor:
@@ -141,7 +141,6 @@ class MySQL:
             sql = u"INSERT IGNORE INTO {table} ({fields}) VALUES {values}".format(
                 fields=fields, table=table, values=values)
 
-            print(sql)
             cursor.execute(sql)
             last_id = self.connection.insert_id()
 
