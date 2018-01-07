@@ -24,7 +24,6 @@ def get_mysql(config=None):
 
 
 import pymysql
-
 class MySQL:
     """A Friendly pymysql Class, Provide CRUD functionality"""
 

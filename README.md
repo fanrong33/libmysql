@@ -10,15 +10,14 @@ Based on Mysql.class.php
 
 ### 导入Class类
 ```python
-import libmysql
+from libmysql import MySQL
 ```
 
 
 ### 获取数据库连接
 使用单例模式
 ```python
-config = {'host':'127.0.0.1', 'user':'root', 'password':'', 'db':'test', 'port':3306, 'charset':'utf8'} 
-mysql = libmysql.get_mysql(config)
+mysql = MySQL('127.0.0.1', 'user', '', 'test')
 ```
 
 
@@ -28,3 +27,25 @@ data = {'name':'lilei', 'age':25}
 insert_id = mysql.insert('t_user', data)
 ```
 
+### 查询数据
+```python
+user_list = mysql.select('t_user', fields='*', where={'age': 25}, order='id asc', limit='0,5')
+```
+
+### 查询单数据
+```python
+user = mysql.find('t_user', fields='id,name', where='id=1')
+```
+
+#### 更新数据
+```python
+data = {'age':22}
+effect = mysql.update('t_user', where='id=1', data=data)
+print('update {} records success..'.format(effect))
+```
+
+### 删除数据
+```python
+effect = mysql.delete('t_user', where='id=1')
+print('deleted {} records success..'.format(effect))
+```
