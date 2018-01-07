@@ -37,7 +37,7 @@ user_list = mysql.select('t_user', fields='*', where={'age': 25}, order='id asc'
 user = mysql.find('t_user', fields='id,name', where='id=1')
 ```
 
-#### 更新数据
+### 更新数据
 ```python
 data = {'age':22}
 effect = mysql.update('t_user', where='id=1', data=data)
