@@ -16,8 +16,9 @@ from libmysql import MySQL
 
 ### 获取数据库连接
 使用单例模式
+
 ```python
-mysql = MySQL('127.0.0.1', 'user', '', 'test')
+mysql = MySQL('127.0.0.1', 'user', 'pwd', 'db')
 ```
 
 
