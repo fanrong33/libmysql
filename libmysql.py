@@ -2,7 +2,6 @@
 
 """
 A Friendly pymysql CURD Class
-@author 蔡繁荣
 @version 1.0.2 build 20171223
 SQL Injection Warning: pymysql.escape_string(value)
 """
