@@ -2,7 +2,7 @@
 
 """
 MySQL接口使用示例
-@author 蔡繁荣
+
 @version 1.0.1 build 20180107
 """
 
